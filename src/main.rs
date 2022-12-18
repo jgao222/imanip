@@ -28,7 +28,8 @@ fn main() {
 
   // get operation from flag, perform operation on image
   let output_image = match args[1].chars().collect::<Vec<char>>()[1] {
-    'f' => gaussian_blur(bytes, &image_info),
+    'g' => simple_gaussian_blur(bytes, &image_info),
+    'G' => complex_gaussian_blur(bytes, &image_info),
     'i' => identity_image(bytes, &image_info),
     'd' => downscale_image(bytes, &image_info),
     'u' => todo!(),
@@ -147,8 +148,13 @@ fn identity_image(image: &[u8], image_info: &OutputInfo) -> Image {
   apply_to_channels(image, image_info, &|chan: &[u8], info: &OutputInfo| apply_filter(chan, info, &kernels::IDENTITY1))
 }
 
-fn gaussian_blur(image: &[u8], image_info: &OutputInfo) -> Image {
+fn simple_gaussian_blur(image: &[u8], image_info: &OutputInfo) -> Image {
   apply_to_channels(image, image_info, &|chan, info| apply_filter(chan, info, &kernels::GAUSSIAN_SIMPLE))
+}
+
+fn complex_gaussian_blur(image: &[u8], image_info: &OutputInfo) -> Image {
+  let img = apply_to_channels(image, image_info, &|chan, info| apply_filter(chan, info, &kernels::GAUSSIAN_X));
+  apply_to_channels(&img.bytes, image_info, &|chan, info| apply_filter(chan, info, &kernels::GAUSSIAN_Y))
 }
 
 /// downscales image by resampling every other column and row
