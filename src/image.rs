@@ -25,32 +25,51 @@ impl Image {
         let mut chans: Vec<ImageChannel> = vec![];
         for i in 0..num_channels {
             let cbytes = data.iter().skip(i).step_by(num_channels).copied().collect();
-            chans.push(ImageChannel { width, height, bytes: cbytes });
+            chans.push(ImageChannel {
+                width,
+                height,
+                bytes: cbytes,
+            });
         }
-        Image { width, height, color_type, channels: chans }
+        Image {
+            width,
+            height,
+            color_type,
+            channels: chans,
+        }
     }
 
-    pub fn new_from_channels(width: u32, height: u32, color_type: ColorType, chans: Vec<ImageChannel>) -> Image {
-        Image { width, height, color_type, channels: chans }
+    pub fn new_from_channels(
+        width: u32,
+        height: u32,
+        color_type: ColorType,
+        chans: Vec<ImageChannel>,
+    ) -> Image {
+        Image {
+            width,
+            height,
+            color_type,
+            channels: chans,
+        }
     }
 
     pub fn apply_to_channels(&self, apply_func: &dyn Fn(&ImageChannel) -> ImageChannel) -> Image {
         // apply to each channel
         let mut out_channels: Vec<ImageChannel> = vec![];
         for ch in &self.channels {
-            out_channels.push(apply_func(&ch));
+            out_channels.push(apply_func(ch));
         }
 
         Image::new_from_channels(self.width, self.height, self.color_type, out_channels)
     }
 }
 
-impl Into<Vec<u8>> for Image {
-    fn into(self) -> Vec<u8> {
-        let channel_size = self.channels[0].bytes.len();
+impl From<Image> for Vec<u8> {
+    fn from(value: Image) -> Self {
+        let channel_size = value.channels[0].bytes.len();
         let mut out_bytes: Vec<u8> = Vec::new();
         for i in 0..channel_size {
-            for chan in &self.channels {
+            for chan in &value.channels {
                 out_bytes.push(chan.bytes[i]);
             }
         }
@@ -60,6 +79,10 @@ impl Into<Vec<u8>> for Image {
 
 impl ImageChannel {
     pub fn new(width: u32, height: u32, bytes: Vec<u8>) -> Self {
-        ImageChannel { width, height, bytes }
+        ImageChannel {
+            width,
+            height,
+            bytes,
+        }
     }
 }

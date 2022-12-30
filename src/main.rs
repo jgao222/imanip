@@ -24,7 +24,12 @@ fn main() {
     let bytes = &buf[..image_info.buffer_size()];
 
     // convert to intermediate image struct?
-    let image = Image::new(image_info.width, image_info.height, image_info.color_type, bytes);
+    let image = Image::new(
+        image_info.width,
+        image_info.height,
+        image_info.color_type,
+        bytes,
+    );
 
     // hmm have to split into separate color channels and recombine
 

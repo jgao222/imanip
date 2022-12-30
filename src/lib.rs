@@ -1,7 +1,7 @@
 pub mod image;
 pub mod kernels;
 
-use image::{ImageChannel};
+use image::ImageChannel;
 
 pub fn clamp_reflect(value: i64, low: i64, high: i64) -> i64 {
     if value < low {
